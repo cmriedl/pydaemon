@@ -60,7 +60,6 @@ class Daemon:
 
     def _daemonize(self):
         # Based on http://www.steve.org.uk/Reference/Unix/faq_2.html (wayback)
-
         # Fork once
         try:
             pid = os.fork()
@@ -73,7 +72,6 @@ class Daemon:
         # Become a process group and session group leader which ensures the
         # daemon does not have a controlling terminal
         os.setsid()
-        
         # Fork again
         try:
             pid = os.fork()
@@ -84,14 +82,13 @@ class Daemon:
         # a controlling terminal (daemon is now a non-session group leader)
         if pid != 0:
             sys.exit(0)
-        # Prevent the daemon from keeping a a directory in use (preventing
-        # said directory from being unmounted)
+        # Prevent the daemon from keeping a directory in use (preventing
+        # the filesystem from being unmounted)
         os.chdir('/')
         # Daemon gets complete control of permissions for anything it writes
         os.umask(0)
-
         # TODO close any open fds or hope/assume parent took care of that?
-
+        # Cleanup and redirect i/o
         sys.stdout.flush
         sys.stderr.flush
         sys.stdout = open('/dev/null')
